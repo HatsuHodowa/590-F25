@@ -118,9 +118,9 @@ var projectionmatrixLocation = gl.getUniformLocation(program, "projection_matrix
 var viewmatrixLocation = gl.getUniformLocation(program, "view_matrix")
 
 // set tranformation parameters
-var translation = [0.0, 0.0, 0.0];
+var translation = [0.0, 0.0, -2.0];
 var rotationx = 0;
-var rotationy = 0;
+var rotationy = 3.14/3.0;
 var rotationz = 0;
 var scale = [1, 1, 1];
 
@@ -134,7 +134,7 @@ var focal_length = 1.0/Math.tan(fov/2.0);
 var camera_translation = [0.0, 0.0, 3.0];
 var camera_rotationx = 0.0;
 var camera_rotationy = 0.0;
-var camera_rotationz = 0.0;
+var camera_rotationz = 3.14/6;
 
 // Calculating rotation matrix & camera-relative translation
 var r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
