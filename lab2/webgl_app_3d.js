@@ -123,7 +123,7 @@ var smatrixLocation = gl.getUniformLocation(program, "s_matrix");
 // set tranformation parameters
 var translation = [0.0, 0.0, 0.0];
 var rotationx = 0;
-var rotationy = 0;
+var rotationy = Math.PI/4;
 var rotationz = 0;
 var scale = [1, 1, 1];
 
