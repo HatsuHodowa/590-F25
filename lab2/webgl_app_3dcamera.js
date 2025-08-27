@@ -14,7 +14,7 @@ gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 const shaders = {
     vs: `#version 300 es
         uniform mat4 t_matrix, rx_matrix, ry_matrix, rz_matrix, s_matrix;
-        uniform mat4 projection_matrix;
+        uniform mat4 view_matrix, projection_matrix;
         in vec3 vertPosition;
         in vec3 vertColor;
         out vec3 fragColor;
@@ -22,7 +22,7 @@ const shaders = {
         void main() {
             fragColor = vertColor;
             vec4 homogeneousPosition = vec4(vertPosition,1);
-            gl_Position = projection_matrix* t_matrix*ry_matrix*rx_matrix*rz_matrix*s_matrix * homogeneousPosition;
+            gl_Position = projection_matrix*view_matrix*t_matrix*ry_matrix*rx_matrix*rz_matrix*s_matrix * homogeneousPosition;
         }`,
 
     fs: `#version 300 es
@@ -115,11 +115,12 @@ var rzmatrixLocation = gl.getUniformLocation(program, "rz_matrix");
 var smatrixLocation = gl.getUniformLocation(program, "s_matrix");
 
 var projectionmatrixLocation = gl.getUniformLocation(program, "projection_matrix");
+var viewmatrixLocation = gl.getUniformLocation(program, "view_matrix")
 
 // set tranformation parameters
-var translation = [0.0, 0.0, -2.0];
+var translation = [0.0, 0.0, 0.0];
 var rotationx = 0;
-var rotationy = 3.14/3.0;
+var rotationy = 0;
 var rotationz = 0;
 var scale = [1, 1, 1];
 
@@ -133,7 +134,31 @@ var focal_length = 1.0/Math.tan(fov/2.0);
 var camera_translation = [0.0, 0.0, 3.0];
 var camera_rotationx = 0.0;
 var camera_rotationy = 0.0;
-var camera_rotationz = 3.14/6;
+var camera_rotationz = 0.0;
+
+// Calculating rotation matrix & camera-relative translation
+var r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
+var r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
+var r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
+var r12 = -Math.cos(camera_rotationy)*Math.sin(camera_rotationz) + Math.sin(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+var r22 = Math.cos(camera_rotationx)*Math.cos(camera_rotationz)
+var r32 = Math.sin(camera_rotationy)*Math.sin(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+var r13 = Math.sin(camera_rotationy)*Math.cos(camera_rotationx)
+var r23 = -Math.sin(camera_rotationx)
+var r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
+
+var view_translation = [
+    -camera_translation[0]*r11 - camera_translation[1]*r21 - camera_translation[2]*r31,
+    -camera_translation[0]*r12 - camera_translation[1]*r22 - camera_translation[2]*r32,
+    -camera_translation[0]*r13 - camera_translation[1]*r23 - camera_translation[2]*r33
+]
+
+var viewMatrix = new Float32Array([
+    r11, r21, r31, view_translation[0],
+    r12, r22, r32, view_translation[1],
+    r13, r23, r33, view_translation[2],
+    0, 0, 0, 1
+])
 
 // allocate tranformation matrices
 var projectionMatrix = new Float32Array([focal_length/aspect, 0.0, 0.0, 0.0,
@@ -184,9 +209,9 @@ function draw(timestamp) {
     prev_time=current_time;
 
     //change some transform parameters to animate
-//    rotationz = current_time;
-//    rotationy +=  delta_time;
-//    translation[0]=Math.sin(current_time);
+    // rotationz = current_time;
+    // rotationy +=  delta_time;
+    // translation[0]=Math.sin(current_time);
 
 
 // update the model transform matrices based on the transform parameters
@@ -215,6 +240,7 @@ function draw(timestamp) {
     gl.uniformMatrix4fv(rymatrixLocation, false, ryMatrix);
     gl.uniformMatrix4fv(rzmatrixLocation, false, rzMatrix);
     gl.uniformMatrix4fv(smatrixLocation, false, scaleMatrix);
+    gl.uniformMatrix4fv(viewmatrixLocation, true, viewMatrix)
     gl.uniformMatrix4fv(projectionmatrixLocation, false, projectionMatrix);
 
     // Set the color of the canvas. 
