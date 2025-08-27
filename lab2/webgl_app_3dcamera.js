@@ -167,9 +167,52 @@ var scaleMatrix = new Float32Array([scale[0], 0.0, 0.0, 0.0,
                         0.0,scale[1], 0.0, 0.0,
                         0.0, 0.0, scale[2], 0.0,
                         0.0,0.0,0.0,1.0]
-                        );    
-                  
+                        );   
 
+// Listening to inputs
+var rotation_speed = 1/100;
+
+let isDragging = false;
+let lastX, lastY;
+
+canvas.addEventListener("mousedown", (e) => {
+    lastX = e.clientX
+    lastY = e.clientY;
+    console.log(lastX, lastY);
+    isDragging = true;
+})
+
+canvas.addEventListener("mouseup", (e) => {
+    isDragging = false;
+    lastX = e.clientX
+    lastY = e.clientY;
+})
+
+canvas.addEventListener("mouseleave", (e) => {
+    isDragging = false;
+    lastX = e.clientX
+    lastY = e.clientY;
+})
+
+canvas.addEventListener("mousemove", (e) => {
+
+    // Calculating mouse deltas and adjusting camera
+    if (isDragging) {
+        let dx = e.clientX - lastX;
+        let dy = e.clientY - lastY;
+        console.log(e.clientX, lastX, dx);
+
+        camera_rotationy += -dx * rotation_speed;
+        camera_rotationx += -dy * rotation_speed;
+    }
+
+    // Updating last mouse location
+    lastX = e.clientX
+    lastY = e.clientY;
+
+})
+
+// Drawing each frame
 let start;
 let prev_time;
 
