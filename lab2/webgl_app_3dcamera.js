@@ -136,6 +136,8 @@ var camera_rotationx = 0.0;
 var camera_rotationy = 0.0;
 var camera_rotationz = 0;
 
+var r11, r12, r13, r21, r22, r23, r31, r32, r33
+
 // allocate tranformation matrices
 var projectionMatrix = new Float32Array([focal_length/aspect, 0.0, 0.0, 0.0,
                         0.0,focal_length, 0.0, 0.0,
@@ -171,6 +173,7 @@ var scaleMatrix = new Float32Array([scale[0], 0.0, 0.0, 0.0,
 
 // Listening to inputs
 var rotation_speed = 1/100;
+var movement_speed = 1/100;
 
 let isDragging = false;
 let lastX, lastY;
@@ -207,9 +210,18 @@ canvas.addEventListener("mousemove", (e) => {
     }
 
     // Updating last mouse location
-    lastX = e.clientX
+    lastX = e.clientX;
     lastY = e.clientY;
 
+})
+
+canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    
+    // Moving the camera straight forward (local -z axis)
+    camera_translation[0] += r13 * movement_speed * e.deltaY;
+    camera_translation[1] += r23 * movement_speed * e.deltaY;
+    camera_translation[2] += r33 * movement_speed * e.deltaY;
 })
 
 // Drawing each frame
@@ -228,15 +240,15 @@ function draw(timestamp) {
     prev_time=current_time;
 
     // Calculating rotation matrix & camera-relative translation
-    var r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
-    var r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
-    var r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
-    var r12 = -Math.cos(camera_rotationy)*Math.sin(camera_rotationz) + Math.sin(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
-    var r22 = Math.cos(camera_rotationx)*Math.cos(camera_rotationz)
-    var r32 = Math.sin(camera_rotationy)*Math.sin(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
-    var r13 = Math.sin(camera_rotationy)*Math.cos(camera_rotationx)
-    var r23 = -Math.sin(camera_rotationx)
-    var r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
+    r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
+    r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
+    r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
+    r12 = -Math.cos(camera_rotationy)*Math.sin(camera_rotationz) + Math.sin(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+    r22 = Math.cos(camera_rotationx)*Math.cos(camera_rotationz)
+    r32 = Math.sin(camera_rotationy)*Math.sin(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+    r13 = Math.sin(camera_rotationy)*Math.cos(camera_rotationx)
+    r23 = -Math.sin(camera_rotationx)
+    r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
 
     var view_translation = [
         -camera_translation[0]*r11 - camera_translation[1]*r21 - camera_translation[2]*r31,
