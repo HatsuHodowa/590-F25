@@ -172,16 +172,18 @@ var scaleMatrix = new Float32Array([scale[0], 0.0, 0.0, 0.0,
                         );   
 
 // Listening to inputs
-var rotation_speed = 1/100;
-var movement_speed = 1/100;
+let rotation_speed = 1/100;
+let scroll_speed = 1/100;
+let movement_speed = 1/20;
 
 let isDragging = false;
 let lastX, lastY;
 
+let keysPressed = {};
+
 canvas.addEventListener("mousedown", (e) => {
     lastX = e.clientX
     lastY = e.clientY;
-    console.log(lastX, lastY);
     isDragging = true;
 })
 
@@ -203,7 +205,6 @@ canvas.addEventListener("mousemove", (e) => {
     if (isDragging) {
         let dx = e.clientX - lastX;
         let dy = e.clientY - lastY;
-        console.log(e.clientX, lastX, dx);
 
         camera_rotationy += -dx * rotation_speed;
         camera_rotationx += -dy * rotation_speed;
@@ -219,9 +220,17 @@ canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
     
     // Moving the camera straight forward (local -z axis)
-    camera_translation[0] += r13 * movement_speed * e.deltaY;
-    camera_translation[1] += r23 * movement_speed * e.deltaY;
-    camera_translation[2] += r33 * movement_speed * e.deltaY;
+    camera_translation[0] += r13 * scroll_speed * e.deltaY;
+    camera_translation[1] += r23 * scroll_speed * e.deltaY;
+    camera_translation[2] += r33 * scroll_speed * e.deltaY;
+})
+
+document.addEventListener("keydown", (e) => {
+    keysPressed[e.key] = true;
+})
+
+document.addEventListener("keyup", (e) => {
+    delete keysPressed[e.key];
 })
 
 // Drawing each frame
@@ -239,7 +248,7 @@ function draw(timestamp) {
     const delta_time = current_time - prev_time;
     prev_time=current_time;
 
-    // Calculating rotation matrix & camera-relative translation
+    // Calculating rotation matrix
     r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
     r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
     r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
@@ -250,6 +259,43 @@ function draw(timestamp) {
     r23 = -Math.sin(camera_rotationx)
     r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
 
+    // Camera movement with WASD
+    let moveDirection = [0, 0, 0];
+    if (keysPressed["w"] == true) {
+        moveDirection[0] -= r13;
+        moveDirection[1] -= r23;
+        moveDirection[2] -= r33;
+    }
+    if (keysPressed["a"] == true) {
+        moveDirection[0] -= r11;
+        moveDirection[1] -= r21;
+        moveDirection[2] -= r31;
+    }
+    if (keysPressed["s"] == true) {
+        moveDirection[0] += r13;
+        moveDirection[1] += r23;
+        moveDirection[2] += r33;
+    }
+    if (keysPressed["d"] == true) {
+        moveDirection[0] += r11;
+        moveDirection[1] += r21;
+        moveDirection[2] += r31;
+    }
+    console.log(moveDirection);
+
+    let magnitude = Math.sqrt(moveDirection[0] ** 2 + moveDirection[1] ** 2 + moveDirection[2] ** 2);
+    console.log(magnitude);
+    if (magnitude > 0) {
+        moveDirection[0] /= magnitude;
+        moveDirection[1] /= magnitude;
+        moveDirection[2] /= magnitude;
+
+        camera_translation[0] += moveDirection[0] * movement_speed;
+        camera_translation[1] += moveDirection[1] * movement_speed;
+        camera_translation[2] += moveDirection[2] * movement_speed;
+    }
+
+    // Calculating view matrix
     var view_translation = [
         -camera_translation[0]*r11 - camera_translation[1]*r21 - camera_translation[2]*r31,
         -camera_translation[0]*r12 - camera_translation[1]*r22 - camera_translation[2]*r32,
