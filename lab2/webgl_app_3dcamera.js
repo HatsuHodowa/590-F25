@@ -134,31 +134,7 @@ var focal_length = 1.0/Math.tan(fov/2.0);
 var camera_translation = [0.0, 0.0, 3.0];
 var camera_rotationx = 0.0;
 var camera_rotationy = 0.0;
-var camera_rotationz = 3.14/6;
-
-// Calculating rotation matrix & camera-relative translation
-var r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
-var r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
-var r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
-var r12 = -Math.cos(camera_rotationy)*Math.sin(camera_rotationz) + Math.sin(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
-var r22 = Math.cos(camera_rotationx)*Math.cos(camera_rotationz)
-var r32 = Math.sin(camera_rotationy)*Math.sin(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
-var r13 = Math.sin(camera_rotationy)*Math.cos(camera_rotationx)
-var r23 = -Math.sin(camera_rotationx)
-var r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
-
-var view_translation = [
-    -camera_translation[0]*r11 - camera_translation[1]*r21 - camera_translation[2]*r31,
-    -camera_translation[0]*r12 - camera_translation[1]*r22 - camera_translation[2]*r32,
-    -camera_translation[0]*r13 - camera_translation[1]*r23 - camera_translation[2]*r33
-]
-
-var viewMatrix = new Float32Array([
-    r11, r21, r31, view_translation[0],
-    r12, r22, r32, view_translation[1],
-    r13, r23, r33, view_translation[2],
-    0, 0, 0, 1
-])
+var camera_rotationz = 0;
 
 // allocate tranformation matrices
 var projectionMatrix = new Float32Array([focal_length/aspect, 0.0, 0.0, 0.0,
@@ -207,6 +183,30 @@ function draw(timestamp) {
     const current_time = timestamp_sec - start; 
     const delta_time = current_time - prev_time;
     prev_time=current_time;
+
+    // Calculating rotation matrix & camera-relative translation
+    var r11 = Math.cos(camera_rotationy)*Math.cos(camera_rotationz) + Math.sin(camera_rotationz)*Math.sin(camera_rotationy)*Math.sin(camera_rotationx)
+    var r21 = Math.sin(camera_rotationz)*Math.cos(camera_rotationx)
+    var r31 = -Math.sin(camera_rotationy)*Math.cos(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.sin(camera_rotationz)
+    var r12 = -Math.cos(camera_rotationy)*Math.sin(camera_rotationz) + Math.sin(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+    var r22 = Math.cos(camera_rotationx)*Math.cos(camera_rotationz)
+    var r32 = Math.sin(camera_rotationy)*Math.sin(camera_rotationz) + Math.cos(camera_rotationy)*Math.sin(camera_rotationx)*Math.cos(camera_rotationz)
+    var r13 = Math.sin(camera_rotationy)*Math.cos(camera_rotationx)
+    var r23 = -Math.sin(camera_rotationx)
+    var r33 = Math.cos(camera_rotationy)*Math.cos(camera_rotationx)
+
+    var view_translation = [
+        -camera_translation[0]*r11 - camera_translation[1]*r21 - camera_translation[2]*r31,
+        -camera_translation[0]*r12 - camera_translation[1]*r22 - camera_translation[2]*r32,
+        -camera_translation[0]*r13 - camera_translation[1]*r23 - camera_translation[2]*r33
+    ]
+
+    var viewMatrix = new Float32Array([
+        r11, r21, r31, view_translation[0],
+        r12, r22, r32, view_translation[1],
+        r13, r23, r33, view_translation[2],
+        0, 0, 0, 1
+    ])
 
     //change some transform parameters to animate
     // rotationz = current_time;
