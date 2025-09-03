@@ -67,14 +67,16 @@ const vertexAttributes = {
         data: new Float32Array([0.0,0.5, 0.0,
                                -0.5, -0.5, 0.0, 
                                0.5, -0.5, 0.0,
-                               0.0,-0.9, 0.5])
+                               0.0,-0.9, 0.5,
+                               2.0, 0.0, 0.0])
     },
     color: { 
         numberOfComponents: 3, // RGB triple
         data: new Float32Array([1.0, 0.0, 0.0, 
                                 0.0, 1.0, 0.0, 
                                 0.0, 0.0, 0.0,
-                                1.0, 1.0, 1.0])
+                                1.0, 1.0, 1.0,
+                                1.0, 1.0, 0.0])
     }
 };
 
@@ -310,9 +312,9 @@ function draw(timestamp) {
     ])
 
     //change some transform parameters to animate
-    // rotationz = current_time;
-    // rotationy +=  delta_time;
-    // translation[0]=Math.sin(current_time);
+    rotationz = current_time;
+    rotationy +=  delta_time;
+    translation[0]=Math.sin(current_time);
 
 
 // update the model transform matrices based on the transform parameters
@@ -351,7 +353,7 @@ function draw(timestamp) {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Draw the triangles
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 5);
 
     // request the draw function be called again at the next display refresh
     requestAnimationFrame(draw)
