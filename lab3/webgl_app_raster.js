@@ -312,20 +312,17 @@ function draw(timestamp) {
     // TODO #2: Implement a basic line drawing algorithm
     function rasterize_line(x1,y1,x2,y2) {
         // Calculating bounding box & slope
-        let topRight = [Math.max(x1, x2), Math.max(y1, y2)];
-        let bottomLeft = [Math.min(x1, x2), Math.min(y1, y2)];
         let slope = (y2 - y1) / (x2 - x1);
-        console.log(slope);
 
         // Checking slope
         if (Math.abs(slope) >= 1) {
-            for (let y = bottomLeft[1]; y <= topRight[1]; y++) {
-                x = (y - bottomLeft[1]) / slope + bottomLeft[0];
+            for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
+                x = (y - y1) / slope + x1;
                 rasterize_point(x, y);
             }
         } else {
-            for (let x = bottomLeft[0]; x <= topRight[0]; x++) {
-                y = slope * (x - bottomLeft[0]) + bottomLeft[1];
+            for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
+                y = slope * (x - x1) + y1;
                 rasterize_point(x, y);
             }
         }
@@ -340,7 +337,56 @@ function draw(timestamp) {
 
     // TODO #3: Implement a filled triangle rasterization algorithm using scan conversion
     function rasterize_filled_triangle(x1, y1, x2, y2, x3, y3) {
+
+        // finding bounding box
+        let bottomLeft = [Math.min(x1, x2, x3), Math.min(y1, y2, y3)];
+        let topRight = [Math.max(x1, x2, x3), Math.max(y1, y2, y3)];
+
+        // finding edge vectors
+        let edge_lefts = [
+            get_line_left(x1, y1, x2, y2),
+            get_line_left(x2, y2, x3, y3),
+            get_line_left(x3, y3, x1, y1)
+        ]
+        let points = [
+            [x1, y1], [x2, y2], [x3, y3]
+        ]
+
+        // checking each pixel in bounding box
+        for (let x = bottomLeft[0]; x <= topRight[0]; x++) {
+            for (let y = bottomLeft[1]; y <= topRight[1]; y++) {
+
+                // checking if inside triangle
+                let inside = true;
+                for (let i = 0; i < edge_lefts.length; i++) {
+                    let left = edge_lefts[i];
+                    let dotProduct = dot(x - points[i][0], y - points[i][1], left[0], left[1]);
+                    if (dotProduct < 0) {
+                        inside = false;
+                    }
+                }
+
+                // filling
+                if (inside == true) {
+                    rasterize_point(x, y);
+                }
+
+            }
+        }
    
+    }
+
+    // dot product of vectors
+    function dot(x1, y1, x2, y2) {
+        return x1 * x2 + y1 * y2;
+    }
+
+    // helper function to get left vector of line segment
+    function get_line_left(x1, y1, x2, y2) {
+        let displace = [x2 - x1, y2 - y1];
+        let mag = Math.sqrt(Math.pow(displace[0], 2) + Math.pow(displace[1], 2));
+        let left = [-(y2-y1)/mag, (x2-x1)/mag];
+        return left;
     }
 
     // not really related to rasterization, but hey
@@ -364,10 +410,11 @@ function draw(timestamp) {
     // TODO #2
     // rasterize_line(2.0, 1.0, 18.0,13.0);
     // rasterize_line(2.0, 1.0, 13.0, 18.0);
-    rasterize_wireframe_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
+    //rasterize_line(2.0, 18.0, 18.0, 2.0)
+    //rasterize_wireframe_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
 
     // TODO #3
-    //rasterize_filled_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
+    rasterize_filled_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
 
     // just for fun :)
     //draw_smiley()
