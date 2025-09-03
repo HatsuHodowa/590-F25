@@ -306,15 +306,30 @@ function draw(timestamp) {
     // TODO #1:  Make this function work
     // Hint: x,y are real numbers.  What does fillPixel expect?
     function rasterize_point(x, y) {
-        fillPixel(x,y);
+        fillPixel(Math.floor(x),Math.floor(y));
     }
 
     // TODO #2: Implement a basic line drawing algorithm
     function rasterize_line(x1,y1,x2,y2) {
-        // Your job is to implement a much better algorithm than this completely broken one!
-        for (var i=0;i<=x2-x1;i++) {
-            rasterize_point( x1 + i, y1 + i);
+        // Calculating bounding box & slope
+        let topRight = [Math.max(x1, x2), Math.max(y1, y2)];
+        let bottomLeft = [Math.min(x1, x2), Math.min(y1, y2)];
+        let slope = (y2 - y1) / (x2 - x1);
+        console.log(slope);
+
+        // Checking slope
+        if (Math.abs(slope) >= 1) {
+            for (let y = bottomLeft[1]; y <= topRight[1]; y++) {
+                x = (y - bottomLeft[1]) / slope + bottomLeft[0];
+                rasterize_point(x, y);
+            }
+        } else {
+            for (let x = bottomLeft[0]; x <= topRight[0]; x++) {
+                y = slope * (x - bottomLeft[0]) + bottomLeft[1];
+                rasterize_point(x, y);
+            }
         }
+
     }
 
     function rasterize_wireframe_triangle(x1, y1, x2, y2, x3, y3) {
@@ -340,16 +355,16 @@ function draw(timestamp) {
 
     // draw some stuff into our rasterization grid
     clearGrid();
-    rasterize_point(2,1)
+    //rasterize_point(2,1)
 
     // some things to test
     // TODO #1
-    rasterize_point(2.9,1.9)
+    //rasterize_point(2.9,1.9)
 
     // TODO #2
-    //rasterize_line(2.0, 1.0, 18.0,13.0);
-    //rasterize_line(2.0, 1.0, 13.0, 18.0);
-    //rasterize_wireframe_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
+    // rasterize_line(2.0, 1.0, 18.0,13.0);
+    // rasterize_line(2.0, 1.0, 13.0, 18.0);
+    rasterize_wireframe_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
 
     // TODO #3
     //rasterize_filled_triangle(2.0, 1.0, 18.0, 13.0, 6.0, 16.0);
