@@ -10,15 +10,22 @@ Step 2: Before we can use these applications, we need to scan the room's static 
 
 QUESTIONS:  
 1. Did the scanning seem to have any trouble scanning the room?  
-2. Did it find any models besides just the overall scene mesh?  You   and your partner may have different experiences. 
+It had some issues scanning under different objects like the desks, as well as with thin walls and any smaller objects or geometry.
 
+2. Did it find any models besides just the overall scene mesh?  You   and your partner may have different experiences. 
+It found a number of desks in the space, though it struggled with the concept of the desks being curved.
 
 Step 3: You can do the rest of the experiences seated if you wish, but you need to be in the area that you scanned.  Run MRValemMQDH from inside the Quest by clicking on "App Library" (the right-most icon in the menu bar) and select "Unknown sources“ on the left (the folder with a question mark).  Answer yes to any dialogs that appear.
 
 QUESTIONS: 
 3. What virtual objects do you see?  
+Animal thing, box, lots of mummies that can be jumped on, coffin that mummies are spawning from. The box can be thrown.
+
 4. Use either thumbstick to move the blue character, and X or A to make it jump.  Try jumping on real and virtual things, and describe what happens for different objects.
+Can jump on the tables and basically anything else, including my partner. If you jump on the mummies, they disappear, but some out of the range of where it lets me walk.
+
 5. Hold your arm in out in front of one of the virtual objects; does your arm seem to be in front of the virtual object or behind?
+It seems to be mostly in front, but the occlusion is a bit glitchy.
 
 
 Step 4: Exit the experience by pressing the Meta button, and let your partner do Step 3.
@@ -28,12 +35,14 @@ Step 5: Now run MRmultiplayer from Unknown sources.  Once inside the MR applicat
 
 QUESTIONS:
 6. Describe what the AR, MR, and VR buttons do.
+The AR has a table floating in the air. In MR mode there's a window in front of the table that goes into the table, and the table is a virtual work that I can see into. In the VR world I am fully in the virtual world.
 
 
 Step 6: Change your name, or just press "Confirm", then select "Host Table" then "Host".  Press the "Games" button and play one of the games.
 
 QUESTIONS:
 7. Describe the game you played, and what was possible to do in it.
+I played physics sandbox, some of the objects were resizable, some were throwable, and some weren't. There was a blackhole portal thingy that deleted anything that entered it, an air tube that pushed things upward, some balls you could throw. I used a weird half tube object, sized it large, and used it as a shield to defend myself against the barrage of giant balls the other player was throwing at me.
 
 
 Step 7: Exit the application, and let your partner try Step 5 and Step 6.
